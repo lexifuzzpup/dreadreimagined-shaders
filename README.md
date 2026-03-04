@@ -5,6 +5,25 @@ This shaderpack is based on [Chocapic13' Shaders](https://www.curseforge.com/min
 
 These are the shaders used in DreadReimagined. The modpack is not yet available.
 
+## Build instructions
+### [1] Clone the repository
+```sh
+git clone https://github.com/lexifuzzpup/dreadreimagined-shaders.git
+```
+### [2] Open the repository directory
+```sh
+cd dreadreimagined-shaders
+```
+### [3] Install NPM modules
+```
+npm i
+```
+### [4] Run the NPM build script
+```sh
+npm run build
+```
+The file will be output in `build/*.zip` and `build/*_latest.zip`
+
 ## Gallery
 ![2026-03-02_23.54.50.jpg](readme-assets/2026-03-02_23.54.50.jpg)
 ![2026-02-27_23.09.07.jpg](readme-assets/2026-02-27_23.09.07.jpg)
