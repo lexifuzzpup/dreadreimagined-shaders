@@ -1,7 +1,7 @@
 {
   "name": "dreadreimagined-shaders",
   "version": "1.0.0",
-  "description": "",
+  "description": "Minecraft Iris shaders for dreadreimagined",
   "main": "index.js",
   "scripts": {
     "build": "node build.js"
