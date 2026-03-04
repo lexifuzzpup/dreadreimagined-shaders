@@ -3,7 +3,7 @@ const path = require("node:path");
 const projectProperties = require("./package.json");
 const childProcess = require("child_process");
 
-const projectName = `lexifuzzpup_${projectProperties.name}`;
+const projectName = `${projectProperties.author ?? projectProperties.authors[0]}_${projectProperties.name}`;
 const shaderpackName = `${projectName}_v${projectProperties.version}`;
 
 const rootDir = "./";
@@ -99,7 +99,17 @@ for(const buildJSON of buildDimensions) {
     dimensionPropertiesOutput += "\n";
 }
 fs.writeFileSync(path.join(outDir, "shaders", "dimension.properties"), dimensionPropertiesOutput);
-fs.writeFileSync(path.join(outDir, "dimension.properties"), dimensionPropertiesOutput);
+
+console.log("=-".repeat(32));
+console.log("Zipping files");
+childProcess.spawnSync(`/bin/zip -r ../${shaderpackName}.zip *`, { shell: true, stdio: "inherit", cwd: outDir });
+
+const latestShaderpackFilepath = path.join(rootDir, "build", `${projectName}_latest.zip`);
+console.log(`Creating ${latestShaderpackFilepath}`);
+
+fs.rmSync(latestShaderpackFilepath, { force: true });
+fs.copyFileSync(path.join(rootDir, "build", `${shaderpackName}.zip`), latestShaderpackFilepath);
+
 console.log("Done!");
 
 
