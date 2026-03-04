@@ -1,11 +1,18 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const projectProperties = require("./package.json");
+const childProcess = require("child_process");
+
+const projectName = `lexifuzzpup_${projectProperties.name}`;
+const shaderpackName = `${projectName}_v${projectProperties.version}`;
 
 const rootDir = "./";
-const shaderDirRoot = path.join(rootDir, "shader_source");
-const outDir = path.join(rootDir, "shaders");
+const srcDir = path.join(rootDir, "src");
+const shaderDirRoot = path.join(srcDir, "shader_source");
+const outDir = path.join(rootDir, "build", shaderpackName);
 const shaderDirs = fs.readdirSync(shaderDirRoot);
 
+fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
 
 const builtShaderDirs = [];
@@ -34,7 +41,7 @@ for(const shaderSubdir of builtShaderDirs) {
     buildDimensions.push(buildJSON);
 
     const shaderSrcDir = path.join(shaderDirRoot, shaderSubdir);
-    const shaderOutDir = path.join(outDir, buildJSON.output_name);
+    const shaderOutDir = path.join(outDir, "shaders", buildJSON.output_name);
 
     console.log("=-".repeat(32));
     console.log(`## Building shader ${buildJSON.output_name} ##`);
@@ -46,7 +53,7 @@ for(const shaderSubdir of builtShaderDirs) {
     console.log();
 
     fs.rmSync(shaderOutDir, { recursive: true, force: true });
-    fs.mkdirSync(shaderOutDir);
+    fs.mkdirSync(shaderOutDir, { recursive: true });
 
     for(const baseSubdir of baseShaderDirs) {
         const baseSrcDir = path.join(shaderDirRoot, baseSubdir);
@@ -64,13 +71,13 @@ for(const shaderSubdir of builtShaderDirs) {
 console.log("=-".repeat(32));
 
 console.log("Copying properties");
-copyDirectory(path.join(rootDir, "properties"), outDir, filterFile => filterFile.endsWith(".properties"));
+copyDirectory(path.join(srcDir, "properties"), path.join(outDir, "shaders"), filterFile => filterFile.endsWith(".properties"));
 
 console.log("Copying textures");
-copyDirectory(path.join(rootDir, "texture"), path.join(outDir, "texture"), filterFile => filterFile.endsWith(".png") || filterFile.endsWith(".mcmeta"));
+copyDirectory(path.join(srcDir, "texture"), path.join(outDir, "shaders", "texture"), filterFile => filterFile.endsWith(".png") || filterFile.endsWith(".mcmeta"));
 
 console.log("Copying libs");
-copyDirectory(path.join(rootDir, "lib"), path.join(outDir, "lib"), filterFile => filterFile.endsWith(".glsl"));
+copyDirectory(path.join(srcDir, "lib"), path.join(outDir, "shaders", "lib"), filterFile => filterFile.endsWith(".glsl"));
 
 
 // Compile dimension.properties
@@ -91,6 +98,7 @@ for(const buildJSON of buildDimensions) {
 
     dimensionPropertiesOutput += "\n";
 }
+fs.writeFileSync(path.join(outDir, "shaders", "dimension.properties"), dimensionPropertiesOutput);
 fs.writeFileSync(path.join(outDir, "dimension.properties"), dimensionPropertiesOutput);
 console.log("Done!");
 
